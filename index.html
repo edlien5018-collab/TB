@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KU Canvas Dashboard</title>
+<style>
+  html,body{margin:0}
+  img{max-width:100%}
+  :root{
+    --screen-bg:#ececed;
+    --card:#ffffff;
+    --ink:#2d3b45;
+    --ink-soft:#556572;
+    --ink-faint:#8a99a5;
+    --hair:#e3e6e8;
+    --ku-navy:#12294c;
+    --accent:#2b7de0;
+    --badge:#a5106b;
+    --red:#e8433a;
+    --green-tab:#0a6f3c;
+    --stage:#3a3f44;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--screen-bg);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+  }
+
+  /* ---------- app fills the whole screen ---------- */
+  .phone{
+    position:relative;
+    width:100%;
+    height:100dvh;
+  }
+  .screen{
+    position:relative;
+    width:100%;
+    height:100%;
+    background:var(--screen-bg);
+    overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+
+  /* ---------- app header ---------- */
+  .appbar{
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:calc(env(safe-area-inset-top, 12px) + 12px) 18px 10px;
+    background:var(--screen-bg);
+    z-index:30;
+  }
+  .circ{
+    width:46px;height:46px;border-radius:50%;
+    background:#fbfbfc;
+    box-shadow:0 1px 3px rgba(0,0,0,.14);
+    display:flex;align-items:center;justify-content:center;
+    border:none;cursor:pointer;color:#2d3b45;
+    transition:transform .12s ease, background .12s ease;
+  }
+  .circ:active{transform:scale(.92);background:#eef0f2}
+  .kulogo{
+    width:52px;height:52px;border-radius:11px;background:var(--ku-navy);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 5px rgba(18,41,76,.35);
+  }
+  .kulogo span{
+    font-family:Georgia,"Times New Roman",serif;
+    color:#fff;font-weight:700;font-size:23px;letter-spacing:.5px;
+    position:relative;
+  }
+  .kulogo span::after{content:"®";position:absolute;font-size:7px;top:2px;right:-9px;font-weight:400}
+
+  /* ---------- scroll area ---------- */
+  .scroll{
+    flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
+    padding:2px 16px 4px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .greet{font-size:28px;font-weight:800;letter-spacing:-.4px;margin:6px 2px 6px;color:#25313b}
+  .sub{font-size:15.5px;color:#54636f;margin:0 2px 20px;line-height:1.35}
+  .courses-h{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 2px 12px;
+  }
+  .courses-h b{font-size:19px;font-weight:700;color:#3a4750}
+  .chev{width:20px;height:20px;color:#5a6a75}
+
+  .card{
+    position:relative;
+    background:var(--card);
+    border-radius:16px;
+    min-height:94px;
+    display:flex;align-items:center;
+    margin-bottom:15px;
+    box-shadow:0 1px 3px rgba(30,40,50,.12);
+    overflow:visible;
+  }
+  .tile{
+    width:82px;height:82px;flex:0 0 82px;
+    border-radius:14px;
+    margin:6px 2px 6px 6px;
+    position:relative;overflow:hidden;
+    box-shadow:0 1px 2px rgba(0,0,0,.18);
+    display:flex;align-items:flex-start;justify-content:flex-start;
+  }
+  .dots{
+    position:absolute;top:7px;left:7px;
+    width:30px;height:30px;border-radius:50%;
+    background:#fff;display:flex;align-items:center;justify-content:center;gap:2.5px;
+    z-index:2;
+  }
+  .dots i{width:3.5px;height:3.5px;border-radius:50%;background:#3a4750;display:block}
+  .tile .tlabel{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    text-align:center;font-size:9px;font-weight:800;color:#fff;
+    text-transform:uppercase;letter-spacing:.3px;padding:4px;
+    text-shadow:0 1px 2px rgba(0,0,0,.4);z-index:1;
+  }
+  .ctitle{
+    flex:1 1 auto;padding:12px 14px;
+    font-size:17px;font-weight:600;line-height:1.25;color:#2d3b45;
+  }
+  .mega{
+    flex:0 0 auto;position:relative;padding:0 18px 0 4px;color:#7c8a94;
+  }
+  .mega svg{width:26px;height:26px;display:block}
+  .mbadge{
+    position:absolute;top:-9px;right:11px;
+    min-width:21px;height:21px;padding:0 5px;border-radius:11px;
+    background:var(--badge);color:#fff;font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* ---------- bottom tab bar ---------- */
+  .tabbar{
+    flex:0 0 auto;
+    display:flex;align-items:flex-start;justify-content:space-around;
+    padding:9px 6px 24px;
+    background:#f7f8f9;
+    box-shadow:0 -1px 0 rgba(0,0,0,.05);
+    z-index:30;
+  }
+  .tab{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-size:11.5px;color:#5f6d78;font-weight:500;position:relative;flex:1;
+  }
+  .tab svg{width:25px;height:25px}
+  .tab.active{color:var(--accent)}
+  .tab .tb{
+    position:absolute;top:-6px;left:calc(50% + 6px);
+    min-width:19px;height:19px;padding:0 4px;border-radius:10px;
+    background:var(--red);color:#fff;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* ---------- side drawer ---------- */
+  .backdrop{
+    position:absolute;inset:0;background:rgba(20,26,31,.55);
+    opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s ease;
+    z-index:50;
+  }
+  .drawer{
+    position:absolute;top:0;left:0;bottom:0;
+    width:78%;max-width:300px;
+    background:#fff;
+    transform:translateX(-100%);
+    transition:transform .3s cubic-bezier(.32,.72,0,1);
+    z-index:55;
+    display:flex;flex-direction:column;
+    padding:64px 0 26px;
+    box-shadow:6px 0 26px rgba(0,0,0,.18);
+  }
+  .screen.open .backdrop{opacity:1;visibility:visible}
+  .screen.open .drawer{transform:translateX(0)}
+
+  .prof{padding:8px 26px 20px}
+  .avatar{
+    width:88px;height:88px;border-radius:50%;
+    border:1.5px solid #c7ced3;color:#5b6a74;
+    display:flex;align-items:center;justify-content:center;
+    font-size:34px;font-weight:600;letter-spacing:1px;margin-bottom:16px;
+  }
+  .pname{font-size:24px;font-weight:800;color:#20303a;margin:0 0 3px}
+  .pmail{font-size:16px;color:#7b8892;margin:0}
+  .dsep{height:1px;background:#e9ebed;margin:0 0}
+  .mgroup{padding:8px 0}
+  .mitem{
+    display:flex;align-items:center;gap:22px;
+    padding:14px 26px;font-size:19px;color:#2d3b45;font-weight:500;
+    cursor:pointer;background:none;border:none;width:100%;text-align:left;
+  }
+  .mitem:active{background:#f1f3f4}
+  .mitem svg{width:25px;height:25px;color:#2d3b45;flex:0 0 25px}
+  .ver{margin-top:auto;padding:10px 26px 0;font-size:14px;color:#9aa6ae}
+  .close-x{
+    position:absolute;top:16px;right:16px;width:34px;height:34px;border:none;background:none;
+    color:#8a99a5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+
+  /* hamburger accessibility focus */
+  .circ:focus-visible,.mitem:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+  @media (prefers-reduced-motion:reduce){
+    .drawer,.backdrop,.circ{transition:none}
+  }
+</style>
+
+<div class="phone">
+  <div class="screen" id="screen">
+
+    <!-- app bar -->
+    <div class="appbar">
+      <button class="circ" id="menuBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="kulogo"><span>KU</span></div>
+      <button class="circ" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.8 7.8 0 0 0 0-3l1.7-1.3-1.7-3-2 .8a7.8 7.8 0 0 0-2.6-1.5l-.3-2.1H10.5l-.3 2.1a7.8 7.8 0 0 0-2.6 1.5l-2-.8-1.7 3 1.7 1.3a7.8 7.8 0 0 0 0 3L2.2 14.8l1.7 3 2-.8a7.8 7.8 0 0 0 2.6 1.5l.3 2.1h3.4l.3-2.1a7.8 7.8 0 0 0 2.6-1.5l2 .8 1.7-3-1.7-1.3z"/></svg>
+      </button>
+    </div>
+
+    <!-- scroll content -->
+    <div class="scroll">
+      <div class="greet">Good evening Tyson Blancarte!</div>
+      <div class="sub">Keep going — you're stronger than you feel right now.</div>
+
+      <div class="courses-h">
+        <b>Courses (10)</b>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+      </div>
+
+      <!-- 1 -->
+      <div class="card">
+        <div class="tile" style="background:linear-gradient(150deg,#4c7d38,#3c6b2c)"><div class="dots"><i></i><i></i><i></i></div></div>
+        <div class="ctitle">4269-15951:FIN 310 Finance LEC</div>
+      </div>
+
+      <!-- 2 -->
+      <div class="card">
+        <div class="tile" style="background:linear-gradient(150deg,#c23a6d,#a52d5c)"><div class="dots"><i></i><i></i><i></i></div><div class="tlabel" style="opacity:.35">KU</div></div>
+        <div class="ctitle">4269-18207:BLAW 301 Legal Aspects of Business LEC</div>
+        <div class="mega">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4a1 1 0 0 0 1 1h2l3.5 3.5c.63.63 1.7.18 1.7-.7V6.2c0-.88-1.07-1.33-1.7-.7L6 9H4a1 1 0 0 0-1 1zm14.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+          <div class="mbadge">1</div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="card">
+        <div class="tile" style="background:linear-gradient(150deg,#1c7f92,#136374)"><div class="dots"><i></i><i></i><i></i></div></div>
+        <div class="ctitle">4269-18392:BSAN 202 Statistics LEC</div>
+        <div class="mega">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4a1 1 0 0 0 1 1h2l3.5 3.5c.63.63 1.7.18 1.7-.7V6.2c0-.88-1.07-1.33-1.7-.7L6 9H4a1 1 0 0 0-1 1zm14.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+          <div class="mbadge">1</div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="card">
+        <div class="tile" style="background:linear-gradient(150deg,#8a6d16,#6f5710)"><div class="dots"><i></i><i></i><i></i></div></div>
+        <div class="ctitle">4269-24108:BE 302 Managerial Economics, Honors LEC</div>
+      </div>
+
+      <!-- 5 -->
+      <div class="card">
+        <div class="tile" style="background:linear-gradient(150deg,#5a4a63,#3f3548)"><div class="dots"><i></i><i></i><i></i></div><div class="tlabel">Accounting Info Hub</div></div>
+        <div class="ctitle">Accounting Info Hub</div>
+        <div class="mega">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4a1 1 0 0 0 1 1h2l3.5 3.5c.63.63 1.7.18 1.7-.7V6.2c0-.88-1.07-1.33-1.7-.7L6 9H4a1 1 0 0 0-1 1zm14.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+          <div class="mbadge">2</div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="card">
+        <div class="tile" style="background:linear-gradient(150deg,#3f7d5e,#2f5f47)"><div class="dots"><i></i><i></i><i></i></div><div class="tlabel">Welcome to KU Business</div></div>
+        <div class="ctitle">Business Professional Development Program</div>
+        <div class="mega">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4a1 1 0 0 0 1 1h2l3.5 3.5c.63.63 1.7.18 1.7-.7V6.2c0-.88-1.07-1.33-1.7-.7L6 9H4a1 1 0 0 0-1 1zm14.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+          <div class="mbadge">2</div>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="card">
+        <div class="tile" style="background:linear-gradient(150deg,#2f77c2,#1f5896)"><div class="dots"><i></i><i></i><i></i></div></div>
+        <div class="ctitle">Catalyst Spring 2026</div>
+        <div class="mega">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4a1 1 0 0 0 1 1h2l3.5 3.5c.63.63 1.7.18 1.7-.7V6.2c0-.88-1.07-1.33-1.7-.7L6 9H4a1 1 0 0 0-1 1zm14.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+          <div class="mbadge">2</div>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="card">
+        <div class="tile" style="background:linear-gradient(150deg,#556069,#3c454c)"><div class="dots"><i></i><i></i><i></i></div></div>
+        <div class="ctitle">Security Essentials</div>
+      </div>
+    </div>
+
+    <!-- tab bar -->
+    <div class="tabbar">
+      <div class="tab active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M4 13h1M19 13h1M12 5V4"/><path d="M12 13l3.5-3" stroke-linecap="round"/><circle cx="12" cy="13" r="1.4" fill="currentColor"/></svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9h17M8 3v3M16 3v3" stroke-linecap="round"/></svg>
+        <span>Calendar</span>
+      </div>
+      <div class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z" fill="none"/><path d="M8.5 11l1.5 1.5 2.5-2.5M8.5 16l1.5 1.5 2.5-2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>To-do</span>
+        <div class="tb">12</div>
+      </div>
+      <div class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 19a2 2 0 0 0 4 0" stroke-linecap="round"/></svg>
+        <span>Notifications</span>
+      </div>
+      <div class="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Inbox</span>
+        <div class="tb">4</div>
+      </div>
+    </div>
+
+    <!-- side drawer -->
+    <div class="backdrop" id="backdrop"></div>
+    <div class="drawer" role="dialog" aria-label="Profile menu" aria-modal="true">
+      <button class="close-x" id="closeBtn" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="prof">
+        <div class="avatar">TB</div>
+        <p class="pname">Tyson Blancarte</p>
+        <p class="pmail">T558B834@ku.edu</p>
+      </div>
+      <div class="dsep"></div>
+      <div class="mgroup">
+        <button class="mitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4l2 2.5h7A1.5 1.5 0 0 1 19 9v8.5A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5z"/></svg>
+          Files
+        </button>
+        <button class="mitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.8 7.8 0 0 0 0-3l1.7-1.3-1.7-3-2 .8a7.8 7.8 0 0 0-2.6-1.5l-.3-2.1H10.5l-.3 2.1a7.8 7.8 0 0 0-2.6 1.5l-2-.8-1.7 3 1.7 1.3a7.8 7.8 0 0 0 0 3L2.2 14.8l1.7 3 2-.8a7.8 7.8 0 0 0 2.6 1.5l.3 2.1h3.4l.3-2.1a7.8 7.8 0 0 0 2.6-1.5l2 .8 1.7-3-1.7-1.3z"/></svg>
+          Settings
+        </button>
+      </div>
+      <div class="dsep"></div>
+      <div class="mgroup">
+        <button class="mitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.5a2.5 2.5 0 0 1 4.6 1.2c0 1.7-2.2 2-2.2 3.3" stroke-linecap="round"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg>
+          Help
+        </button>
+        <button class="mitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8.5" r="3.5"/><path d="M6 20a6 6 0 0 1 12 0" stroke-linecap="round"/></svg>
+          Change User
+        </button>
+        <button class="mitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5H6a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8"/><path d="M14 12h7M18 9l3 3-3 3"/></svg>
+          Log Out
+        </button>
+      </div>
+      <div class="ver">Canvas v8.12.1</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const screen = document.getElementById('screen');
+  const open = () => screen.classList.add('open');
+  const close = () => screen.classList.remove('open');
+  document.getElementById('menuBtn').addEventListener('click', open);
+  document.getElementById('backdrop').addEventListener('click', close);
+  document.getElementById('closeBtn').addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+</script>
+</body>
+</html>
